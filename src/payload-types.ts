@@ -13,6 +13,10 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    patients: Patient;
+    dieticians: Dietician;
+    appointments: Appointment;
+    'progress-tracking': ProgressTracking;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -82,6 +86,94 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "patients".
+ */
+export interface Patient {
+  id: string;
+  fullName: string;
+  dateOfBirth?: string | null;
+  contactNumber?: string | null;
+  email?: string | null;
+  address?: string | null;
+  medicalHistory?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "dieticians".
+ */
+export interface Dietician {
+  id: string;
+  user: string | User;
+  fullName: string;
+  contactNumber: string;
+  email: string;
+  specialization: string;
+  licenseNumber: string;
+  bio?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appointments".
+ */
+export interface Appointment {
+  id: string;
+  patient: string | Patient;
+  dietician: string | Dietician;
+  appointmentDate: string;
+  status: 'pending' | 'approved' | 'completed' | 'cancelled';
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "progress-tracking".
+ */
+export interface ProgressTracking {
+  id: string;
+  patient: string | Patient;
+  dietician: string | Dietician;
+  progressDate: string;
+  status: 'on_track' | 'needs_improvement' | 'completed';
+  notes?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  attachment?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -94,6 +186,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'patients';
+        value: string | Patient;
+      } | null)
+    | ({
+        relationTo: 'dieticians';
+        value: string | Dietician;
+      } | null)
+    | ({
+        relationTo: 'appointments';
+        value: string | Appointment;
+      } | null)
+    | ({
+        relationTo: 'progress-tracking';
+        value: string | ProgressTracking;
       } | null);
   globalSlug?: string | null;
   user: {
